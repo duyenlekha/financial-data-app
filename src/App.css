@@ -36,3 +36,32 @@
     transform: rotate(360deg);
   }
 }
+
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px; /* Adjust the gap between grid items */
+}
+
+.form-grid .ant-form-item {
+  background: #f9f9f9;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ant-layout-sider {
+  height: auto !important;
+}
+.row-positive {
+  background-color: #d4edda; /* Light green */
+}
+
+.row-negative {
+  background-color: #f8d7da; /* Light red */
+}
+
+.row-neutral {
+  background-color: #ffffff; /* White or keep the default color */
+}

@@ -5,8 +5,10 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import config from './config';
 const { Option } = Select;
 const { TextArea } = Input;
+
 
 interface StockData {
     Id: number;
@@ -53,7 +55,11 @@ const EditFindData: React.FC<EditStockDataFormProps> = ({ recordId, onClose }) =
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5003/api/find-data/get/${recordId}`);
+        const response = await axios.get(`${config.API_BASE_URL}/api/find-data/get/${recordId}`, {
+          headers: {
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
         const fetchedData: StockData[] = response.data;
         setData(fetchedData);
         
@@ -145,7 +151,7 @@ const EditFindData: React.FC<EditStockDataFormProps> = ({ recordId, onClose }) =
         Date: values.Date ? values.Date.format('YYYY-MM-DD') : null,
         MarketCap: values.MarketCap || 0,
         Float: values.Float || 0,
-        Gap: values.Gap || 0,
+        GAPPercent: values.GAPPercent || 0,
         PremarketVolume: values.PremarketVolume || 0,
         OpenPrice: values.OpenPrice || 0,
         HighPrice: values.HighPrice || 0,
@@ -157,6 +163,7 @@ const EditFindData: React.FC<EditStockDataFormProps> = ({ recordId, onClose }) =
         GapHighPricePercent: values.GapHighPricePercent || 0,
         VolumeToPremarketRatio: values.VolumeToPremarketRatio || 0,
         Sector: values.Sector || '',
+        Volume: values.Volume || 0,
         VolumeSizeIn: values.VolumeSizeIn || 0,
         DesImageUrl: values.DesImageUrl || '',
         ImageUrl: values.ImageUrl || '',
@@ -189,8 +196,8 @@ const EditFindData: React.FC<EditStockDataFormProps> = ({ recordId, onClose }) =
     try {
 
         
-        await axios.put(`http://localhost:5003/api/find-data/update/${recordId}`, payload, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+        await axios.put(`${config.API_BASE_URL}/api/find-data/update/${recordId}`, payload, {
+          headers: { 'ngrok-skip-browser-warning': 'true' },
         });
         form.resetFields();
         setFileList([]);
@@ -222,9 +229,13 @@ const EditFindData: React.FC<EditStockDataFormProps> = ({ recordId, onClose }) =
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="Exchange" label="Exchange">
-                <Input />
-              </Form.Item>
+            <Form.Item name="Exchange" label="Exchange">
+              <Select placeholder="Select Exchange">
+                <Option value="NASDAQ">NASDAQ</Option>
+                <Option value="OTC">OTC</Option>
+                <Option value="NYSE">NYSE</Option>
+              </Select>
+            </Form.Item>
             </Col>
             <Col span={6}>
               <Form.Item name="Date" label="Date" rules={[{ required: true }]}>

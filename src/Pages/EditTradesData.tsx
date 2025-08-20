@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import config from './config';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -12,16 +13,10 @@ const { TextArea } = Input;
 interface TradeData {
     TradeID: number;
     Symbol: string;
-    Exchange: string;
-    Sector: string;
     TradeDate: string;
     Position: string;
     Shares: number;
-    InAvg: number;
-    OutAvg: number;
     PL: number;
-    Percentage: number;
-    NetGainLoss: number;
     Setup: string;
     Description: string;
     ImageUrl: string;
@@ -42,7 +37,11 @@ const EditTradesData: React.FC<EditTradeDataProps> = ({ recordId, onClose }) => 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5003/api/trades-data/get/${recordId}`);
+                const response = await axios.get(`${config.API_BASE_URL}/api/trades-data/get/${recordId}`, {
+                    headers: {
+                      'ngrok-skip-browser-warning': 'true'
+                    }
+                  });
                 const fetchedData: TradeData[] = response.data;
                 setData(fetchedData);
                 
@@ -98,17 +97,11 @@ const EditTradesData: React.FC<EditTradeDataProps> = ({ recordId, onClose }) => 
         
         const payload: Record<string, any> = {
             Symbol: values.Symbol || '',
-            Exchange: values.Exchange || '',
-            Sector: values.Sector || '',
             TradeDate: values.TradeDate ? values.TradeDate.format('YYYY-MM-DD') : null,
             Position: values.Position || '',
             Shares: values.Shares || 0,
-            InAvg: values.InAvg || 0,
-            OutAvg: values.OutAvg || 0,
             PL: values.PL || 0,
             LocateFee: values.LocateFee || 0,
-            Percentage: values.Percentage || 0,
-            NetGainLoss: values.NetGainLoss || 0,
             Setup: values.Setup || '',
             Description: values.Description || '',
             ImageUrl: values.ImageUrl || '',
@@ -128,8 +121,8 @@ const EditTradesData: React.FC<EditTradeDataProps> = ({ recordId, onClose }) => 
         }
 
         try {
-            await axios.put(`http://localhost:5003/api/trades-data/update/${recordId}`, payload, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+            await axios.put(`${config.API_BASE_URL}/api/trades-data/update/${recordId}`, payload, {
+                headers: { 'ngrok-skip-browser-warning': 'true' },
             });
             form.resetFields();
             setFileList([]);
@@ -149,23 +142,13 @@ const EditTradesData: React.FC<EditTradeDataProps> = ({ recordId, onClose }) => 
             <Form form={form} layout="vertical" onFinish={handleUpdate}>
                 <Row gutter={16}>
                     <Col span={6}><Form.Item name="Symbol" label="Symbol" rules={[{ required: true }]}><Input /></Form.Item></Col>
-                    <Col span={6}><Form.Item name="Exchange" label="Exchange"><Input /></Form.Item></Col>
-                    <Col span={6}><Form.Item name="Sector" label="Sector"><Input /></Form.Item></Col>
                     <Col span={6}><Form.Item name="TradeDate" label="Trade Date" rules={[{ required: true }]}><DatePicker /></Form.Item></Col>
-                </Row>
-                <Row gutter={16}>
                     <Col span={6}><Form.Item name="Position" label="Position"><Input /></Form.Item></Col>
                     <Col span={6}><Form.Item name="Shares" label="Shares"><InputNumber style={{ width: '100%' }} /></Form.Item></Col>
-                    <Col span={6}><Form.Item name="InAvg" label="In Avg"><InputNumber style={{ width: '100%' }} /></Form.Item></Col>
-                    <Col span={6}><Form.Item name="OutAvg" label="Out Avg"><InputNumber style={{ width: '100%' }} /></Form.Item></Col>
                 </Row>
                 <Row gutter={16}>
                     <Col span={6}><Form.Item name="PL" label="P/L"><InputNumber style={{ width: '100%' }} /></Form.Item></Col>
                     <Col span={6}><Form.Item name="LocateFee" label="LocateFee"><InputNumber style={{ width: '100%' }} /></Form.Item></Col>
-                    <Col span={6}><Form.Item name="Percentage" label="Percentage"><InputNumber style={{ width: '100%' }} /></Form.Item></Col>
-                    <Col span={6}><Form.Item name="NetGainLoss" label="Net Gain/Loss"><InputNumber style={{ width: '100%' }} /></Form.Item></Col>
-                </Row>
-                <Row gutter={16}>
                     <Col span={24}><Form.Item name="Setup" label="Setup"><TextArea rows={4} /></Form.Item></Col>
                     <Col span={24}><Form.Item name="Description" label="Description"><TextArea rows={4} /></Form.Item></Col>
                 </Row>

@@ -14,11 +14,16 @@ import {
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import config from './config';
 
 const { TextArea } = Input;
 const { Option } = Select;
 
-const TradesForm: React.FC = () => {
+type TradesFormProps = {
+  onSuccess?: () => void;
+};
+
+const TradesForm: React.FC<TradesFormProps> = ({ onSuccess }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [previewImage, setPreviewImage] = useState<string>('');
@@ -81,11 +86,16 @@ const TradesForm: React.FC = () => {
     console.log("payload", payload)
 
     try {
-      await axios.post('http://localhost:5003/api/trades-data/insert', payload);
+      await axios.post(`${config.API_BASE_URL}/api/trades-data/insert`, payload, {
+        headers: {
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       message.success('Trade data submitted successfully');
       form.resetFields();
       setFileList([]);
       setPreviewImage('');
+      onSuccess?.();
     } catch (error) {
       console.error('Error submitting trade data:', error);
       message.error('Failed to submit trade data');
@@ -103,22 +113,10 @@ const TradesForm: React.FC = () => {
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item name="Exchange" label="Exchange">
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item name="Sector" label="Sector">
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
           <Form.Item name="TradeDate" label="Trade Date" rules={[{ required: true }]}>
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
         </Col>
-      </Row>
-      <Row gutter={16}>
         <Col span={6}>
           <Form.Item name="Position" label="Position">
             <Select placeholder="Select Position">
@@ -129,16 +127,6 @@ const TradesForm: React.FC = () => {
         </Col>
         <Col span={6}>
           <Form.Item name="Shares" label="Shares">
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item name="InAvg" label="In Avg">
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item name="OutAvg" label="Out Avg">
             <InputNumber style={{ width: '100%' }} />
           </Form.Item>
         </Col>
@@ -155,10 +143,13 @@ const TradesForm: React.FC = () => {
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item name="Setup" label="Setup">
-            <Input />
-          </Form.Item>
-        </Col>
+        <Form.Item name="Setup" label="Setup">
+          <Select placeholder="Select setup">
+            <Select.Option value="Good">Good</Select.Option>
+            <Select.Option value="Bad">Bad</Select.Option>
+          </Select>
+        </Form.Item>
+      </Col>
       </Row>
       <Row gutter={16}>
         <Col span={24}>

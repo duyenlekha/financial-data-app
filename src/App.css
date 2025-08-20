@@ -24,6 +24,10 @@
   color: white;
 }
 
+.ant-layout-sider {
+  height: 10000vh;
+}
+
 .App-link {
   color: #61dafb;
 }

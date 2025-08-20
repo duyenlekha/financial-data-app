@@ -44,7 +44,7 @@ function App() {
       height: 48,
       color: '#1890ff'
     }}>
-      KhaLe ©2024 v001.000.000.000
+      KhaLe ©2024 v001.000.001.000
     </Footer>    </Layout>
    
   );
